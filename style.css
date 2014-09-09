@@ -1,0 +1,62 @@
+/*
+Site: Where Did All the Time Go?
+URI: http://jennyfan.com/time
+Author: Jenny Fan
+Author URI: http://jennyfan.com
+Version: 1.0
+Description: A visualization mapping how I used my time during college.
+*/
+
+body {
+	background-color: #fff;
+	margin: 0;
+	background-repeat: repeat;
+	background-image: url('images/bg.gif');
+}
+
+/* Content Blocks */
+#header {
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+#header img {
+	width: 800px;
+}
+#content {
+	float: center;
+	width: 80%;
+	height: 600px;
+	margin: 0 auto;
+	text-align: left;
+}
+
+/* TEXT */
+p, div {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 100%;
+	color: #666;
+}
+li>p {
+	text-transform: none;
+	font-weight: none;
+	font-family: Helvetica, Arial, sans-serif;
+	color: #999;
+	padding: 0 0 0 35px;
+	margin: 0;
+}
+
+/* Links */
+a {	
+	text-decoration: none;
+}
+a:link {
+	color: #28c2aa;
+}
+a:visited {
+	color: #1ba38e;
+}
+a:hover, a:active {
+	color: #28e1d9;
+}
+

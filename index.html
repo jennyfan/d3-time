@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Where Did All the Time Go? | Mapping Project by Jenny Fan</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="style.css" />
+
+ 	<script type="jquery-1.7.min.js"></script>
+
+	<script type="text/javascript" src="d3/d3.v3.js"></script>
+</head>
+
+<body>
+	<div id="header">
+		<img src="images/header.gif" border="0" alt="" />
+	</div>
+
+  <div id="content">
+  </div>
+
+
+<script type="text/javascript">
+//The height of the graph (without text).
+var graphHeight = 450;
+var xOffset = 95;
+var yOffset = 15;
+var rightPadding = 50;
+var bottomPadding = 5;
+var width = window.innerWidth - xOffset - rightPadding;
+var verticalSpacing = 5;
+var height = graphHeight - yOffset - bottomPadding;
+var svg;
+var unfilteredData;
+var maxValue = 250;
+var hMultiplier, barHeight, barYMultiplier;
+
+
+window.onload = function() {
+  svg = d3.select("div#content").append("svg").attr("width", "100%").attr("height", graphHeight);
+
+  d3.csv("hours.csv", function(data) {
+    unfilteredData = d;
+
+    hMultiplier = width / maxValue;
+    barHeight = height / (data.length * 3) - verticalSpacing;
+    barYMultiplier = barHeight + verticalSpacing;
+
+    refilter("all");
+  });
+
+  function refilter(filterCategory) {
+    if (filterCategory == "all") {
+      data = unfilteredData;
+    }
+    else {
+      data = unfilteredData.filter(function(d) {
+        return (d["Calendar"] == filterCategory);
+      });
+    }
+  }
+
+  d3.selectAll("g").remove ();
+
+  var dataAdd = svg.selectAll("g").data(data);
+  var dataEnter = dataAdd.enter().append("g");
+
+  for (var dataCount = 1; dataCount <= 3, ++dataCount) {
+    dataEnter.append("rect").attr("x", xOffset).attr("num", function(d, i) {
+      return i;
+    });
+    dataEnter.append("text").attr("font-size", 10).attr("num", function(d, i) { 
+      return i;
+    });
+  }
+
+  dataAdd.selectAll("rect").attr("y", function(d, i) {
+    return d3.select(this).attr("num") * barYMultiplier * 3 + i * barYMultiplier + yOffset;
+    }).attr("height", barHeight).transition().duration(1000).attr("width", function(d, i) {
+    return d["Month " + (i + 1)] * hMultiplier + 5;
+    }).attr("stroke", "gray").attr("fill", function(d, i) {
+      if (i == 0) {
+        return "blue";
+        } 
+      else if (i == 1) {
+        return "green";
+        }
+      else {
+        return "red";
+        }
+  });
+
+   
+  dataAdd.selectAll("text").text(function(d, i) {
+    return d["Calendar"];
+  }).attr("x", 0).attr("y", function(d, i) {
+    return d3.select(this).attr("num") * barYMultiplier * 3 + i * barYMultiplier + yOffset + 6;
+  }).attr("fill", function(d) {
+    if (d["Calendar"] == "Academic") {
+      return "blue";
+    }
+    else if (d["Calendar"] == "Work") {
+      return "green";
+    }
+    else {
+      return "black";
+    }
+  });
+   
+};
+</script>
+
+
+</body>
+</html>
