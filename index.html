@@ -5,108 +5,160 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css" />
 
- 	<script type="jquery-1.7.min.js"></script>
-
-	<script type="text/javascript" src="d3/d3.v3.js"></script>
+ 	<script type="js/jquery-1.7.min.js"></script>
+	<script type="text/javascript" src="js/d3.min.js"></script>
 </head>
 
 <body>
-	<div id="header">
-		<img src="images/header.gif" border="0" alt="" />
-	</div>
-
-  <div id="content">
-  </div>
+<h1>Where did all the time go?</h1>
+<h2>A visualization of time spent in college | by <a href="http://jennyfan.com" target="_blank">Jenny Fan</a></h2>
 
 
-<script type="text/javascript">
-//The height of the graph (without text).
-var graphHeight = 450;
-var xOffset = 95;
-var yOffset = 15;
-var rightPadding = 50;
-var bottomPadding = 5;
-var width = window.innerWidth - xOffset - rightPadding;
-var verticalSpacing = 5;
-var height = graphHeight - yOffset - bottomPadding;
-var svg;
-var unfilteredData;
-var maxValue = 250;
-var hMultiplier, barHeight, barYMultiplier;
+<div class="footer">
+<p>When I was in college, I often felt like I majored in "Extracurricular Activities" instead of any particular academic field. It was where I met some of my closest friends, made my most meaningful memories, and learned the hardest lessons. To keep on top of the swirling list of activities, I kept a very detailed set of Google Calendars organized by activities, starting from my second semester freshman year (Spring 2009) all the way until the my second semester senior year (Spring 2012), where I first assembled this data for an <a href="https://datadesign.wordpress.com/" target="_blank">Information Design</a> course. Now, nearly four years later after the spark of interest in data visualization was lit, I revisited this project as a learning exercise in D3.js and a chance to refresh the aesthetic.</p>
 
 
-window.onload = function() {
-  svg = d3.select("div#content").append("svg").attr("width", "100%").attr("height", graphHeight);
+<h3>Tools Used: <a href="https://www.gcal2excel.com/" target="_blank">GCal2Excel</a>, <a href="http://d3js.org" target="_blank">D3.js</a> | Published: Feb 2012 | Updated: Dec 2015</h3></div>
 
-  d3.csv("hours.csv", function(data) {
-    unfilteredData = d;
 
-    hMultiplier = width / maxValue;
-    barHeight = height / (data.length * 3) - verticalSpacing;
-    barYMultiplier = barHeight + verticalSpacing;
+<svg class="chart"></svg>
 
-    refilter("all");
+<script src="js/d3.min.js" charset="utf-8"></script>
+
+<script>
+var w = window.innerWidth;
+var l = (w > 1000) ? (w - 1000)/2 : 80;
+
+var margin = {top: 50, right: (l+50), bottom: 100, left: l},
+    width = 1000 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var parseDate = d3.time.format("%Y-%m").parse;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.ordinal()
+    .range(["#26395e", "#3d6b9d", "#83a6c4", "#72aebb", "#4b556d", "#6c555f", "#9f3535", "#b55252", "#b07f7f", "#97a155", "#d6d17a", "#c29a73","#d18541", "#b76939"]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .tickFormat(d3.time.format("%Y-%m"));
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(d3.format(".2s"));
+
+var chart = d3.select(".chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.csv("hours.csv", function(error, data) {
+  if (error) throw error;
+
+  data.forEach(function (d) {
+      d.month = parseDate(String(d.month));
+      d.Academic = +d.Academic;
+      d.Classes = +d.Classes;
+      d.CRM = +d.CRM;
+      d.aKDPhi = +d.aKDPhi;
+      d.APAHW = +d.APAHW;
+      d.CSA = +d.CSA;
+      d.FOTB = +d.FOTB;
+      d.Oracle = +d.Oracle;
+      d.PEER = +d.PEER;
+      d.WAX = +d.WAX;
+      d.Other = +d.Other;
+      d.Recruiting = +d.Recruiting;
+      d.Social = +d.Social;
+      d.Work = +d.Work;
   });
 
-  function refilter(filterCategory) {
-    if (filterCategory == "all") {
-      data = unfilteredData;
-    }
-    else {
-      data = unfilteredData.filter(function(d) {
-        return (d["Calendar"] == filterCategory);
+  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "month"; }));
+
+  
+  data.forEach(function (d) {
+      var y0 = 0;
+      d.types = color.domain().map(function (name) {
+          return {
+              name: name,
+              y0: y0,
+              y1: y0 += +d[name]
+          };
       });
-    }
-  }
-
-  d3.selectAll("g").remove ();
-
-  var dataAdd = svg.selectAll("g").data(data);
-  var dataEnter = dataAdd.enter().append("g");
-
-  for (var dataCount = 1; dataCount <= 3, ++dataCount) {
-    dataEnter.append("rect").attr("x", xOffset).attr("num", function(d, i) {
-      return i;
-    });
-    dataEnter.append("text").attr("font-size", 10).attr("num", function(d, i) { 
-      return i;
-    });
-  }
-
-  dataAdd.selectAll("rect").attr("y", function(d, i) {
-    return d3.select(this).attr("num") * barYMultiplier * 3 + i * barYMultiplier + yOffset;
-    }).attr("height", barHeight).transition().duration(1000).attr("width", function(d, i) {
-    return d["Month " + (i + 1)] * hMultiplier + 5;
-    }).attr("stroke", "gray").attr("fill", function(d, i) {
-      if (i == 0) {
-        return "blue";
-        } 
-      else if (i == 1) {
-        return "green";
-        }
-      else {
-        return "red";
-        }
+      d.total = d.types[d.types.length - 1].y1;
   });
 
-   
-  dataAdd.selectAll("text").text(function(d, i) {
-    return d["Calendar"];
-  }).attr("x", 0).attr("y", function(d, i) {
-    return d3.select(this).attr("num") * barYMultiplier * 3 + i * barYMultiplier + yOffset + 6;
-  }).attr("fill", function(d) {
-    if (d["Calendar"] == "Academic") {
-      return "blue";
-    }
-    else if (d["Calendar"] == "Work") {
-      return "green";
-    }
-    else {
-      return "black";
-    }
-  });
-   
-};
+  data.sort(function(a, b) { return a.month - b.month; });
+
+
+  x.domain(data.map(function(d) { return d.month; }));
+  y.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+
+  chart.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .selectAll("text")  
+          .style("text-anchor", "end")
+          .attr("dx", "-.8em")
+          .attr("dy", ".15em")
+          .attr("transform", "rotate(-65)" );
+
+  chart.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Hours");
+
+  var month = chart.selectAll(".month")
+      .data(data)
+      .enter().append("g")
+      .attr("class", "g")
+      .attr("transform", function(d) { return "translate(" + x(d.month) + ",0)"; });
+
+  month.selectAll("rect")
+      .data(function(d) { return d.types; })
+      .enter().append("rect")
+      .attr("class", function(d) { return d.name; })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.y1); })
+      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+      .style("fill", function(d) { return color(d.name); });
+
+
+  var legend = chart.selectAll(".legend")
+      .data(color.domain().slice().reverse())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(100," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", width - 18)
+      .attr("id", function(d) { return d; })
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+});
+
 </script>
 
 

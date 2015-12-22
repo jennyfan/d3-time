@@ -3,60 +3,96 @@ Site: Where Did All the Time Go?
 URI: http://jennyfan.com/time
 Author: Jenny Fan
 Author URI: http://jennyfan.com
-Version: 1.0
-Description: A visualization mapping how I used my time during college.
+Version: 2.0
+Description: A reboot 4 years later of the Spring 2012 visualization mapping how I used my time during college.
 */
 
-body {
-	background-color: #fff;
-	margin: 0;
-	background-repeat: repeat;
-	background-image: url('images/bg.gif');
+@font-face {
+	font-family: 'Freight Black';
+	src: url(fdb.otf);
+}
+@font-face {
+	font-family: 'Freight';
+	src: url(fd.otf);
 }
 
-/* Content Blocks */
-#header {
-	display: block;
-	width: 100%;
+body {
+	margin: 50px 0;
+	background-color: #f3f3f3;
+  	font: 16px;
 	text-align: center;
 }
-#header img {
-	width: 800px;
+
+rect:hover {
+  opacity: 0.5 !important;
 }
-#content {
-	float: center;
-	width: 80%;
-	height: 600px;
-	margin: 0 auto;
-	text-align: left;
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #5e5e74;
+  shape-rendering: crispEdges;
 }
 
-/* TEXT */
-p, div {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 100%;
-	color: #666;
+.x.axis path {
+  display: none;
 }
-li>p {
-	text-transform: none;
-	font-weight: none;
-	font-family: Helvetica, Arial, sans-serif;
-	color: #999;
-	padding: 0 0 0 35px;
-	margin: 0;
-}
+
 
 /* Links */
 a {	
 	text-decoration: none;
 }
 a:link {
-	color: #28c2aa;
+	color: #5e6575;
 }
 a:visited {
-	color: #1ba38e;
+	color: #5e6575;
 }
 a:hover, a:active {
-	color: #28e1d9;
+	color: #8c9ca8;
 }
 
+/* Text */
+g { 
+	font-size: 0.9em;
+	font-family: 'PT Sans';
+	letter-spacing: 0.05em;
+}
+text { fill: #5e5e74; }
+
+h1 {
+	font-family: 'Freight Black';
+	font-size: 52px;
+	font-weight: 700;
+	margin: 100px auto 20px;
+	color: #5e6575;
+}
+h2 {
+	font-family: 'PT Sans';
+	font-size: 16px;
+	font-weight: 300;
+	text-transform: uppercase;
+	margin: 20px auto 30px;
+	letter-spacing: 0.02em;
+	color: #a8a499;
+}
+h3 {
+	font-family: 'PT Sans';
+	font-size: 14px;
+	font-weight: 100;
+	line-height: 1.5em;
+	text-transform: uppercase;
+	margin: 20px auto;
+	letter-spacing: 0.02em;
+	color: #a8a499;
+}
+.footer {
+	width: 70%;
+	margin: 0 auto;
+	font-family: 'Freight';
+	font-size: 1.2em;
+	line-height: 1.4em;
+	letter-spacing: 0.02em;
+	margin: 50px auto 40px;
+	color: #5e5e74;
+}
