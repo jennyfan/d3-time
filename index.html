@@ -5,8 +5,9 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css" />
 
- 	<script type="js/jquery-1.7.min.js"></script>
-	<script type="text/javascript" src="js/d3.min.js"></script>
+ 	<script src="js/jquery-1.7.min.js"></script>
+	<script src="js/d3.min.js"></script>
+  <script src="js/d3.tip.js"></script>
 </head>
 
 <body>
@@ -22,8 +23,6 @@
 
 
 <svg class="chart"></svg>
-
-<script src="js/d3.min.js" charset="utf-8"></script>
 
 <script>
 var w = window.innerWidth;
@@ -54,11 +53,20 @@ var yAxis = d3.svg.axis()
     .orient("left")
     .tickFormat(d3.format(".2s"));
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d,i) {
+    return "<h3>" + d.name + ": <span>" + d3.round(d.y1,2) + " hours</span></h3>";
+  });
+
 var chart = d3.select(".chart")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+chart.call(tip);
 
 d3.csv("hours.csv", function(error, data) {
   if (error) throw error;
@@ -93,6 +101,7 @@ d3.csv("hours.csv", function(error, data) {
               y1: y0 += +d[name]
           };
       });
+      console.log(d.types);
       d.total = d.types[d.types.length - 1].y1;
   });
 
@@ -136,8 +145,9 @@ d3.csv("hours.csv", function(error, data) {
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d.y1); })
       .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-      .style("fill", function(d) { return color(d.name); });
-
+      .style("fill", function(d) { return color(d.name); })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
 
   var legend = chart.selectAll(".legend")
       .data(color.domain().slice().reverse())
@@ -149,7 +159,13 @@ d3.csv("hours.csv", function(error, data) {
       .attr("id", function(d) { return d; })
       .attr("width", 18)
       .attr("height", 18)
-      .style("fill", color);
+      .style("fill", color)
+      .on("mouseover", function(d) {
+        d3.selectAll("."+d).classed("hover",true)      
+      })
+      .on("mouseout", function(d) { 
+        d3.selectAll("."+d).classed("hover",false)
+      });
 
   legend.append("text")
       .attr("x", width - 24)

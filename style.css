@@ -23,7 +23,7 @@ body {
 	text-align: center;
 }
 
-rect:hover {
+rect:hover, .hover {
   opacity: 0.5 !important;
 }
 .axis path,
@@ -37,6 +37,33 @@ rect:hover {
   display: none;
 }
 
+.d3-tip {
+  padding: 0px 12px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 3px;
+}
+.d3-tip span {
+	color: #fff !important;
+}
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
 
 /* Links */
 a {	
@@ -82,7 +109,7 @@ h3 {
 	font-weight: 100;
 	line-height: 1.5em;
 	text-transform: uppercase;
-	margin: 20px auto;
+	margin: 10px auto;
 	letter-spacing: 0.02em;
 	color: #a8a499;
 }
